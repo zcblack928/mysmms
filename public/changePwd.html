@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>华联超市管理系统</title>
+    <!-- 引入jqery.min.js -->
+    <script src="./libs/jquery/jquery.min.js"></script>
+    <!--引入elementui.css -->
+    <link rel="stylesheet" href="libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- 引入vue.js -->
+    <script src="./libs/vue/vue.js"></script>
+    <!-- 引入elementui.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+
+</head>
+
+<body>
+    <!-- 准备dom -->
+    <div id="app">
+
+        <el-container>
+            
+            <!-- 右边内容 -->
+            <el-container>
+                <!-- 右边头部 -->
+                <el-header>
+                    <h2>欢迎您 admin</h2>
+                    <p>添加管理员</p>
+                </el-header>
+                <!-- 右边内容 -->
+                <el-main>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <h2>修改密码</h2>
+                        </div>
+                        <div class="text item">
+                            <!-- 表单 -->
+                            <div class="register">
+                                <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                                    <el-form-item label="用户名" prop="username">
+                                        <el-input type="text" readonly="readonly" v-model="loginForm.username" autocomplete="off"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="旧密码" prop="oldPassword">
+                                        <el-input type="password" v-model="loginForm.oldPassword" autocomplete="off"></el-input>
+                                    </el-form-item>
+
+                                    <el-form-item label="修改密码" prop="newPassword">
+                                        <el-input type="password" v-model="loginForm.newPassword" autocomplete="off"></el-input>
+                                    </el-form-item>
+
+                                    <el-form-item label="确认密码" prop="confirmPrssword">
+                                        <el-input type="password" v-model="loginForm.confirmPrssword"></el-input>
+                                    </el-form-item>
+
+                                    <el-form-item label="选择用户组" prop="groups">
+                                        <el-select v-model="loginForm.groups" placeholder="请选择用户类型">
+                                            <el-option label="普通管理员" value="普通管理员"></el-option>
+                                            <el-option label="超级管理员" value="超级管理员"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                    <el-form-item>
+                                        <el-button type="primary" @click="addForm('loginForm')">修改</el-button>
+                                        <el-button @click="resetForm('loginForm')">重置</el-button>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
+                        </div>
+                    </el-card>
+                </el-main>
+                <!-- 右边尾部 -->
+                <el-footer>
+                    &copy; Copyright 2018 华联超市管理系统
+                </el-footer>
+            </el-container>
+        </el-container>
+    </div>
+
+
+
+    <script>
+        // 创建vue实例
+        new Vue({
+            el: '#app',
+            data() {
+                // 验证旧密码输入是否一致
+                let oldPwd = (rule, value, callback) => {
+                    if (value === '') { // 非空验证
+                        callback(new Error('请再次输入密码！'))
+                    } else if (value !== this.loginForm.dataPwd) { // 验证与第一次密码是否一致
+                        callback(new Error('输入的密码不正确！'))
+                    } else { // 成功 返回正确
+                        callback();
+                    }
+                }
+                // 自己写一个检查密码函数
+                let checkPass = (rule, value, callback) => {
+                    if (value === '') { // 非空验证
+                        callback(new Error('请再次输入密码！'))
+                    } else if (value !== this.loginForm.newPassword) { // 验证与第一次密码是否一致
+                        callback(new Error('两次输入的密码不一致！'))
+                    } else { // 成功 返回正确
+                        callback();
+                    }
+                }
+                return {
+                    // 
+                    loginForm: {
+                        id:'',  // 这条数据的id
+                        dataPwd:'',  //原来的密码
+                        username: '',
+                        oldPassword: '',  // 输入的旧密码
+                        newPassword:'',   // 新密码
+                        groups:'',
+                        confirmPrssword: ''   // 确认新密码
+                    },
+                    // 验证表单
+                    rules: {
+                        // 验证旧密码是否一致
+                        oldPassword: [
+                            { validator: oldPwd, required: true, trigger: 'blur' }
+                        ],
+                        // 验证用户名
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' }, // 非空验证
+                            { min: 2, max: 12, message: '用户名长度在 2 到 12 个字符', trigger: 'blur' } // 长度验证
+                        ],
+                        // 验证修改的新密码
+                        newPassword: [
+                            { required: true, message: '请输入密码', trigger: 'blur' }, // 非空验证
+                            { min: 6, max: 12, message: '密码长度在 6 到 12 个字符', trigger: 'blur' } // 长度验证
+                        ],
+                        // 验证密码
+                        confirmPrssword: [
+                            { validator: checkPass, required: true, trigger: 'blur' }
+                        ],
+                        region: [
+                            { required: true, message: '请选择活动区域', trigger: 'change' }
+                        ],
+                    }
+                };
+            },
+
+            created(){
+                // url地址 截取id
+                let site=location.href;
+                let id = site.split('=')[1];
+                // 保存this
+                let _this = this;
+                $.get(`/users/changePwd?id=${id}`,function (data) {
+                    // 接收数据  赋值到给表单
+                    console.log(data[0]);
+                    let userData = data[0];
+                    _this.loginForm.id=userData.id;                    
+                    _this.loginForm.username=userData.username;
+                    _this.loginForm.groups=userData.groups;
+                    _this.loginForm.dataPwd=userData.password;
+                    
+                });
+            },
+            methods: {
+                // 提交修改好的表单数据
+
+                addForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // 添加成功  发送ajax 提交表单数据
+                            // 定义参数对象  获取新密码
+                            const params = {
+                                id:this.loginForm.id,
+                                username:this.loginForm.username,
+                                password:this.loginForm.newPassword,  // 新密码
+                                groups:this.loginForm.groups  
+                            }
+                            // 发送ajax给后端
+                            $.post('/users/userEdit',params,function(data){
+                                // 如果成功  弹出成提示  data.errcode===1
+                                if (data.errcode===1) {
+                                    alert(data.msg);
+                                    // 跳转到用户列表页面
+                                    location.href = "./userList.html";
+                                } else {
+                                    // 否则 弹出失败提示框
+                                    alert(data.msg);
+                                }
+
+                            })
+
+
+                        } else {
+                            console.log('添加失败!请检查账号密码!');
+                            return false;
+                        }
+                    });
+                },
+                // 重置表单
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+
+        })
+
+
+    </script>
+</body>
+
+</html>

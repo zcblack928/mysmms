@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <!--引入elementui.css -->
+    <link rel="stylesheet" href="libs/elementui/css/elementui.min.css">
+    <!-- 引入自定义样式 -->
+    <!-- <link rel="stylesheet" href="./css/login.css"> -->
+    <!-- 引入vue.js -->
+    <!-- <script src="./libs/vue/vue.min.js"></script> -->
+    <script src="https://lib.baomitu.com/vue/2.5.17/vue.js"></script>
+    <!-- 引入elementui.js -->
+    <script src="./libs/elementui/js/elementui.min.js"></script>
+
+</head>
+
+<body>
+    <!-- 准备dom -->
+    <div id="app">
+        <el-button type="success" disabled>成功按钮</el-button>
+        <div class="block">
+            <span class="demonstration">默认</span>
+            <el-date-picker v-model="value1" type="date" placeholder="选择日期">
+            </el-date-picker>
+        </div>
+        <div class="block">
+            <span class="demonstration">带快捷选项</span>
+            <el-date-picker v-model="value2" align="right" type="date" placeholder="选择日期" :picker-options="pickerOptions1">
+            </el-date-picker>
+        </div>
+    </div>
+
+
+
+    <script>
+        // 创建vue实例
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    pickerOptions1: {
+                        disabledDate(time) {
+                            return time.getTime() > Date.now();
+                        },
+                        shortcuts: [{
+                            text: '今天',
+                            onClick(picker) {
+                                picker.$emit('pick', new Date());
+                            }
+                        }, {
+                            text: '昨天',
+                            onClick(picker) {
+                                const date = new Date();
+                                date.setTime(date.getTime() - 3600 * 1000 * 24);
+                                picker.$emit('pick', date);
+                            }
+                        }, {
+                            text: '一周前',
+                            onClick(picker) {
+                                const date = new Date();
+                                date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                                picker.$emit('pick', date);
+                            }
+                        }]
+                    },
+                    value1: '',
+                    value2: '',
+                };
+            }
+        })
+
+
+    </script>
+</body>
+
+</html>
